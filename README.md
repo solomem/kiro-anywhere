@@ -17,6 +17,14 @@ Convert common AI coding-agent configurations into Kiro CLI-compatible agents â€
 
 `kiro-anywhere` is a Kiro CLI agent that reads recognized source agent configs from other tools and generates valid `.kiro/agents/<name>.json` files plus any supporting artifacts (steering files, skills, hooks).
 
+## Use cases
+
+- Convert Claude Code project instructions to Kiro CLI agents
+- Convert Cursor rules (`.cursorrules`, `.cursor/rules/*.md`) to Kiro agent configuration
+- Convert GitHub Copilot custom instructions and agent profiles to Kiro-compatible prompts and agents
+- Migrate Cline, Windsurf, Aider, and Continue configuration into `.kiro/agents/`
+- Preserve common AI agent concepts such as prompts, tools, permissions, resources, hooks, skills, and MCP server configuration
+
 ## Supported source formats
 
 | Tool | Config files |
