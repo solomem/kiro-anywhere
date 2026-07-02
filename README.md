@@ -1,10 +1,10 @@
 # kiro-harness
 
-Convert any AI agent configuration into a Kiro CLI-compatible agent — supports Claude Code, Cursor, Windsurf, Aider, Continue, Cline, GitHub Copilot, and custom formats.
+Convert common AI coding-agent configurations into Kiro CLI-compatible agents — supports Claude Code, Cursor, Windsurf, Aider, Continue, Cline, GitHub Copilot, and structured custom formats.
 
 ## What it does
 
-`kiro-harness` is a Kiro CLI agent that reads source agent configs from other tools and generates valid `.kiro/agents/<name>.json` files plus any supporting artifacts (steering files, skills, hooks).
+`kiro-harness` is a Kiro CLI agent that reads recognized source agent configs from other tools and generates valid `.kiro/agents/<name>.json` files plus any supporting artifacts (steering files, skills, hooks).
 
 ## Supported source formats
 
@@ -17,7 +17,7 @@ Convert any AI agent configuration into a Kiro CLI-compatible agent — supports
 | Continue | `.continuerc.json`, `config.json` |
 | Cline | `.clinerules`, `.cline/rules/*.md` |
 | GitHub Copilot | `.github/copilot-instructions.md`, `.github/instructions/**/*.instructions.md`, `AGENTS.md`, `.github/agents/*.agent.md` |
-| Custom | Any structured agent definition |
+| Custom | Structured agent definitions with identifiable prompts, tools, resources, hooks, skills, or MCP servers |
 
 ## Prerequisites
 
