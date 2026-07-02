@@ -1,13 +1,13 @@
 {
-  "name": "kiro-harness",
+  "name": "kiro-anywhere",
   "description": "Convert common AI coding-agent configs (Claude Code, Cursor, Windsurf, Aider, Continue, Cline, Copilot, etc.) into Kiro CLI-compatible agent configurations. Reads recognized or structured source configs, maps tools/permissions/context, and outputs valid .kiro/agents/*.json files.",
-  "prompt": "file://kiro-harness/prompt.md",
+  "prompt": "file://kiro-anywhere/prompt.md",
   "tools": ["read", "write", "shell", "grep", "glob", "code"],
   "allowedTools": ["read", "grep", "glob", "code"],
   "toolsSettings": {
     "write": {
       "allowedPaths": [".kiro/**"],
-      "deniedPaths": [".kiro/agents/kiro-harness.json"]
+      "deniedPaths": [".kiro/agents/kiro-anywhere.json"]
     },
     "shell": {
       "denyByDefault": true,
@@ -15,8 +15,8 @@
     }
   },
   "resources": [
-    "file://kiro-harness/REFERENCE.md",
-    "file://kiro-harness/MAPPINGS.md"
+    "file://kiro-anywhere/REFERENCE.md",
+    "file://kiro-anywhere/MAPPINGS.md"
   ],
   "welcomeMessage": "Paste or point me at a supported or clearly structured agent config (CLAUDE.md, .cursorrules, .continuerc, aider config, Cline rules, Copilot instructions, etc.) and I'll convert it to a Kiro CLI agent."
 }

@@ -1,4 +1,4 @@
-# kiro-harness
+# kiro-anywhere
 
 ```text
  __    _                                            __
@@ -15,7 +15,7 @@ Convert common AI coding-agent configurations into Kiro CLI-compatible agents �
 
 ## What it does
 
-`kiro-harness` is a Kiro CLI agent that reads recognized source agent configs from other tools and generates valid `.kiro/agents/<name>.json` files plus any supporting artifacts (steering files, skills, hooks).
+`kiro-anywhere` is a Kiro CLI agent that reads recognized source agent configs from other tools and generates valid `.kiro/agents/<name>.json` files plus any supporting artifacts (steering files, skills, hooks).
 
 ## Supported source formats
 
@@ -43,7 +43,7 @@ chmod +x install.sh
 ./install.sh
 ```
 
-This installs the `kiro-harness` agent to `~/.kiro/agents/` (available globally).
+This installs the `kiro-anywhere` agent to `~/.kiro/agents/` (available globally).
 
 Verify it's installed:
 
@@ -51,7 +51,7 @@ Verify it's installed:
 kiro-cli agent list
 ```
 
-You should see `kiro-harness` in the list.
+You should see `kiro-anywhere` in the list.
 
 ## Usage
 
@@ -61,7 +61,7 @@ Navigate to any project with a source harness and start a chat:
 
 ```bash
 cd ~/my-project  # has .cursorrules, CLAUDE.md, etc.
-kiro-cli chat --agent kiro-harness
+kiro-cli chat --agent kiro-anywhere
 ```
 
 Then tell it what to convert:
@@ -78,7 +78,7 @@ For automation or CI:
 
 ```bash
 cd ~/my-project
-kiro-cli chat --agent kiro-harness --trust-all-tools --no-interactive \
+kiro-cli chat --agent kiro-anywhere --trust-all-tools --no-interactive \
   "Convert all agent configs in this project to Kiro format"
 ```
 
@@ -106,7 +106,7 @@ Depending on the source config, the agent produces:
 | Test/lint runners | `stop` hook |
 | Reusable workflows | `.kiro/skills/` |
 
-For the full mapping reference, see [MAPPINGS.md](kiro-harness/MAPPINGS.md).
+For the full mapping reference, see [MAPPINGS.md](kiro-anywhere/MAPPINGS.md).
 
 ## Limitations
 
@@ -124,9 +124,9 @@ The agent will note these and suggest workarounds where possible.
 
 The agent uses three reference files:
 
-- **[prompt.md](kiro-harness/prompt.md)** — System prompt with conversion workflow and validation checklist
-- **[REFERENCE.md](kiro-harness/REFERENCE.md)** — Kiro CLI agent configuration quick reference
-- **[MAPPINGS.md](kiro-harness/MAPPINGS.md)** — Source-to-Kiro concept mapping tables
+- **[prompt.md](kiro-anywhere/prompt.md)** — System prompt with conversion workflow and validation checklist
+- **[REFERENCE.md](kiro-anywhere/REFERENCE.md)** — Kiro CLI agent configuration quick reference
+- **[MAPPINGS.md](kiro-anywhere/MAPPINGS.md)** — Source-to-Kiro concept mapping tables
 
 The agent is configured to:
 - Read any file in the project (to parse source configs)
@@ -139,15 +139,15 @@ The agent is configured to:
 Remove the agent files:
 
 ```bash
-rm ~/.kiro/agents/kiro-harness.json
-rm -rf ~/.kiro/agents/kiro-harness/
+rm ~/.kiro/agents/kiro-anywhere.json
+rm -rf ~/.kiro/agents/kiro-anywhere/
 ```
 
 ## Contributing
 
 To update the reference material or add support for new source formats:
 
-1. Edit files in `kiro-harness/`
+1. Edit files in `kiro-anywhere/`
 2. Run `./install.sh` to reinstall
 3. Test with a sample source config
 

@@ -3,11 +3,11 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-mkdir -p ~/.kiro/agents/kiro-harness
+mkdir -p ~/.kiro/agents/kiro-anywhere
 
-cp "$SCRIPT_DIR/kiro-harness.json" ~/.kiro/agents/kiro-harness.json
-cp "$SCRIPT_DIR/kiro-harness/REFERENCE.md" ~/.kiro/agents/kiro-harness/REFERENCE.md
-cp "$SCRIPT_DIR/kiro-harness/MAPPINGS.md" ~/.kiro/agents/kiro-harness/MAPPINGS.md
-cp "$SCRIPT_DIR/kiro-harness/prompt.md" ~/.kiro/agents/kiro-harness/prompt.md
+cp "$SCRIPT_DIR/kiro-anywhere.json" ~/.kiro/agents/kiro-anywhere.json
+cp "$SCRIPT_DIR/kiro-anywhere/REFERENCE.md" ~/.kiro/agents/kiro-anywhere/REFERENCE.md
+cp "$SCRIPT_DIR/kiro-anywhere/MAPPINGS.md" ~/.kiro/agents/kiro-anywhere/MAPPINGS.md
+cp "$SCRIPT_DIR/kiro-anywhere/prompt.md" ~/.kiro/agents/kiro-anywhere/prompt.md
 
-echo "✓ kiro-harness installed to ~/.kiro/agents/"
+echo "✓ kiro-anywhere installed to ~/.kiro/agents/"
