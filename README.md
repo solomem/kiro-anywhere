@@ -1,5 +1,16 @@
 # kiro-harness
 
+```text
+ __    _                                            __
+/ /__ (_)______  ____     ____ _____  __  ______  / /_  ___  ________
+/ //_/ / ___/ _ \/ __ \   / __ `/ __ \/ / / / __ \/ __ \/ _ \/ ___/ _ \
+/ ,< / / /  /  __/ /_/ /  / /_/ / / / / /_/ / /_/ / / / /  __/ /  /  __/
+/_/|_/_/_/   \___/\____/   \__,_/_/ /_/\__, / .___/_/ /_/\___/_/   \___/
+                                      /____/_/
+
+        many agent configs  --->  Kiro anywhere
+```
+
 Convert common AI coding-agent configurations into Kiro CLI-compatible agents — supports Claude Code, Cursor, Windsurf, Aider, Continue, Cline, GitHub Copilot, and structured custom formats.
 
 ## What it does
