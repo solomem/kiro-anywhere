@@ -2,11 +2,16 @@
   "name": "kiro-harness",
   "description": "Convert any AI agent harness/config (Claude Code, Cursor, Windsurf, Aider, Continue, Cline, etc.) into a Kiro CLI-compatible agent configuration. Reads source configs, maps tools/permissions/context, and outputs valid .kiro/agents/*.json files.",
   "prompt": "file://kiro-harness/prompt.md",
-  "tools": ["fs_read", "fs_write", "execute_bash", "grep", "glob", "code"],
-  "allowedTools": ["fs_read", "grep", "glob", "code"],
+  "tools": ["read", "write", "shell", "grep", "glob", "code"],
+  "allowedTools": ["read", "grep", "glob", "code"],
   "toolsSettings": {
-    "fs_write": {
-      "allowedPaths": [".kiro/**"]
+    "write": {
+      "allowedPaths": [".kiro/**"],
+      "deniedPaths": [".kiro/agents/kiro-harness.json"]
+    },
+    "shell": {
+      "denyByDefault": true,
+      "allowedCommands": ["cat", "ls", "find", "head", "tail", "jq"]
     }
   },
   "resources": [

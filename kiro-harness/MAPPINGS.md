@@ -1,4 +1,4 @@
-# Source → Kiro Concept Mappings (v2.8.1)
+# Source → Kiro Concept Mappings
 
 ## Claude Code → Kiro
 
@@ -7,8 +7,8 @@
 | `CLAUDE.md` (project rules) | `prompt` field + `.kiro/steering/*.md` |
 | `CLAUDE.md` (commands section) | `hooks` or `allowedTools` |
 | `.claude/settings.json` → `allowedTools` | `allowedTools` array |
-| `.claude/settings.json` → `permissions.allow` | `toolsSettings.fs_write.allowedPaths` |
-| `.claude/settings.json` → `permissions.deny` | `toolsSettings.fs_write.deniedPaths` |
+| `.claude/settings.json` → `permissions.allow` | `toolsSettings.write.allowedPaths` |
+| `.claude/settings.json` → `permissions.deny` | `toolsSettings.write.deniedPaths` |
 | `.claude/settings.json` → `mcpServers` | `mcpServers` field (same format) |
 | Memory files | `.kiro/steering/*.md` or `resources` |
 | `/allowed-tools` patterns | `allowedTools` with wildcards |
@@ -19,11 +19,11 @@
 |---|---|
 | `.cursorrules` | `prompt` field (inline or file ref) |
 | `.cursor/rules/*.md` (always) | `.kiro/steering/*.md` |
-| `.cursor/rules/*.md` (glob-scoped) | `.kiro/steering/*.md` with `inclusion: fileMatch` |
-| `.cursor/rules/*.md` (manual) | `.kiro/steering/*.md` with `inclusion: manual` |
+| `.cursor/rules/*.md` (glob-scoped) | `.kiro/steering/*.md` (no conditional loading — all steering is always loaded) |
+| `.cursor/rules/*.md` (manual) | `.kiro/skills/*/SKILL.md` (loaded on demand via frontmatter match) |
 | "Include files" in rules | `resources` with `file://` URIs |
 | Composer Agent mode | Default Kiro agent (all tools) |
-| Composer Normal mode | Agent with `tools: ["fs_read", "fs_write", "grep"]` |
+| Composer Normal mode | Agent with `tools: ["read", "write", "grep"]` |
 | Docs references | `resources` or `knowledge` base |
 | MCP servers | `mcpServers` field |
 
@@ -42,10 +42,10 @@
 | Aider | Kiro Equivalent |
 |---|---|
 | `.aider.conf.yml` → `read` files | `resources` with `file://` |
-| `.aider.conf.yml` → `auto-commits` | `postToolUse` hook on `fs_write` for auto-commit |
+| `.aider.conf.yml` → `auto-commits` | `postToolUse` hook with matcher `write` for auto-commit |
 | `.aider.conf.yml` → `lint-cmd` | `stop` hook running linter |
 | `.aider.conf.yml` → `test-cmd` | `stop` hook running tests |
-| `.aiderignore` | `toolsSettings.fs_write.deniedPaths` |
+| `.aiderignore` | `toolsSettings.write.deniedPaths` |
 | `--model` flag | `model` field |
 | Convention files | `.kiro/steering/*.md` |
 
@@ -68,7 +68,7 @@
 | `.clinerules` | `prompt` field |
 | `.cline/rules/*.md` | `.kiro/steering/*.md` |
 | Custom instructions (VS Code setting) | `prompt` field |
-| Allowed commands list | `toolsSettings.execute_bash.allowedCommands` |
+| Allowed commands list | `toolsSettings.shell.allowedCommands` |
 | Auto-approve patterns | `allowedTools` |
 | MCP servers | `mcpServers` field |
 | Memory bank | `.kiro/steering/*.md` or `resources` |
@@ -78,9 +78,18 @@
 | Copilot | Kiro Equivalent |
 |---|---|
 | `.github/copilot-instructions.md` | `prompt` field + `.kiro/steering/*.md` |
-| Workspace settings | Agent config |
-| `@workspace` context | `resources` with glob patterns |
-| Custom agents (chat participants) | Custom agents in `.kiro/agents/` |
+| `.github/instructions/**/*.instructions.md` | `.kiro/steering/*.md`; preserve `applyTo` as text because Kiro steering is always loaded |
+| `AGENTS.md` | `prompt` field + `.kiro/steering/*.md` |
+| Root-level `CLAUDE.md` / `GEMINI.md` | `prompt` field + `.kiro/steering/*.md` |
+| `$HOME/.copilot/copilot-instructions.md` | Global `.kiro/steering/*.md` or agent prompt when explicitly importing user-local preferences |
+| `.github/agents/*.agent.md` | Custom agents in `.kiro/agents/` |
+| `~/.copilot/agents/*.agent.md` | Global custom agents in `~/.kiro/agents/` |
+| Agent profile frontmatter `name` / `description` | Agent config `name` / `description` |
+| Agent profile frontmatter `tools` | Agent config `tools` |
+| Agent profile frontmatter `model` | Agent config `model` |
+| Agent profile frontmatter `mcp-servers` | Agent config `mcpServers` |
+| Agent profile Markdown body | Agent config `prompt` field or prompt file |
+| `@file` prompt context | `resources` with `file://` URIs when the referenced files should be persistent context |
 
 ## Common Patterns
 
@@ -91,32 +100,32 @@
 
 ### "Never edit these paths"
 ```json
-{"toolsSettings": {"fs_write": {"deniedPaths": ["node_modules/**", "dist/**", ".git/**"]}}}
+{"toolsSettings": {"write": {"deniedPaths": ["node_modules/**", "dist/**", ".git/**"]}}}
 ```
 
 ### "Only allow these shell commands"
 ```json
-{"toolsSettings": {"execute_bash": {"allowedCommands": ["npm test", "npm run build", "git status"]}}}
+{"toolsSettings": {"shell": {"allowedCommands": ["npm test", "npm run build", "git status"]}}}
 ```
 
 ### "Run linter after every file write"
 ```json
-{"hooks": {"postToolUse": [{"matcher": "fs_write", "command": "npm run lint -- --fix", "description": "Auto-lint"}]}}
+{"hooks": {"postToolUse": [{"matcher": "write", "command": "npm run lint -- --fix"}]}}
 ```
 
 ### "Run tests when done"
 ```json
-{"hooks": {"stop": [{"command": "npm test", "description": "Run tests after changes"}]}}
+{"hooks": {"stop": [{"command": "npm test"}]}}
 ```
 
 ### "Show git status on start"
 ```json
-{"hooks": {"agentSpawn": [{"command": "git status --short", "description": "Git status"}]}}
+{"hooks": {"agentSpawn": [{"command": "git status --short"}]}}
 ```
 
 ### "Block writes to production config"
 ```json
-{"hooks": {"preToolUse": [{"matcher": "fs_write", "command": "check-not-prod.sh", "description": "Block prod writes"}]}}
+{"hooks": {"preToolUse": [{"matcher": "write", "command": "check-not-prod.sh"}]}}
 ```
 
 ### "Coding standards always in context"
@@ -145,3 +154,4 @@ description: Deploy to production. Use when asked to deploy or ship.
 | Conversation export format | `/chat save` exports JSON |
 | Per-file model routing | Not supported — single model per agent |
 | Embeddings/RAG config | `knowledge` settings (global, not per-agent) |
+| Conditional steering (load rules only for certain files) | Not supported — steering files are always loaded. Use skills for on-demand content. |
