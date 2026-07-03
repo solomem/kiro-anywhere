@@ -1,107 +1,136 @@
 # kiro-anywhere
 
-```text
- __    _                                            __
-/ /__ (_)______  ____     ____ _____  __  ______  / /_  ___  ________
-/ //_/ / ___/ _ \/ __ \   / __ `/ __ \/ / / / __ \/ __ \/ _ \/ ___/ _ \
-/ ,< / / /  /  __/ /_/ /  / /_/ / / / / /_/ / /_/ / / / /  __/ /  /  __/
-/_/|_/_/_/   \___/\____/   \__,_/_/ /_/\__, / .___/_/ /_/\___/_/   \___/
-                                      /____/_/
+> **Migrate your existing AI coding assistants to Kiro in seconds.**
 
-        many agent configs  --->  Kiro anywhere
+Convert Claude Code, Cursor, Windsurf, Continue, Copilot, Cline, and Aider configurations into production-ready Kiro CLI agents — with skills, hooks, steering, and MCP servers preserved.
+
+---
+
+## The problem
+
+You've spent hours crafting the perfect AI coding assistant setup — custom rules, allowed commands, context files, MCP integrations. Now you want to try Kiro.
+
+Starting from scratch? No thanks.
+
+**kiro-anywhere** reads your existing config and generates a complete Kiro agent in seconds.
+
+---
+
+## The transformation
+
+```
+.cursorrules                          .kiro/
+.cursor/rules/        ──────────►     ├── agents/my-project.json
+CLAUDE.md                             ├── steering/conventions.md
+.aider.conf.yml       kiro-anywhere   ├── skills/deploy/SKILL.md
+.github/copilot-                      └── prompts/system.md
+  instructions.md
 ```
 
-Convert common AI coding-agent configurations into Kiro CLI-compatible agents — supports Claude Code, Cursor, Windsurf, Aider, Continue, Cline, GitHub Copilot, and structured custom formats.
+Your rules become **steering files**. Your workflows become **skills**. Your pre-commit checks become **hooks**. Nothing is lost.
 
-## What it does
+---
 
-`kiro-anywhere` is a Kiro CLI agent that reads recognized source agent configs from other tools and generates valid `.kiro/agents/<name>.json` files plus any supporting artifacts (steering files, skills, hooks).
+## Why migrate to Kiro?
 
-## Use cases
+- **Unified agent format** — one config to rule them all
+- **Skills** — reusable, on-demand workflows with frontmatter triggers
+- **Hooks** — run commands at every lifecycle point (spawn, pre-tool, post-tool, stop)
+- **Steering** — always-on conventions loaded into every session
+- **MCP servers** — first-class support for external tool integrations
+- **Shareable** — commit `.kiro/` and your whole team gets the same agent
 
-- Convert Claude Code project instructions to Kiro CLI agents
-- Convert Cursor rules (`.cursorrules`, `.cursor/rules/*.md`) to Kiro agent configuration
-- Convert GitHub Copilot custom instructions and agent profiles to Kiro-compatible prompts and agents
-- Migrate Cline, Windsurf, Aider, and Continue configuration into `.kiro/agents/`
-- Preserve common AI agent concepts such as prompts, tools, permissions, resources, hooks, skills, and MCP server configuration
+---
 
-## Supported source formats
-
-| Tool | Config files |
-|------|-------------|
-| Claude Code | `CLAUDE.md`, `.claude/settings.json` |
-| Cursor | `.cursorrules`, `.cursor/rules/*.md` |
-| Windsurf | `.windsurfrules`, `.windsurf/rules/*.md` |
-| Aider | `.aider.conf.yml`, `.aiderignore` |
-| Continue | `.continuerc.json`, `config.json` |
-| Cline | `.clinerules`, `.cline/rules/*.md` |
-| GitHub Copilot | `.github/copilot-instructions.md`, `.github/instructions/**/*.instructions.md`, `AGENTS.md`, `.github/agents/*.agent.md` |
-| Custom | Structured agent definitions with identifiable prompts, tools, resources, hooks, skills, or MCP servers |
-
-## Prerequisites
-
-- [Kiro CLI](https://kiro.dev) installed and authenticated (`kiro-cli login`)
-
-## Installation
+## Quick start
 
 ```bash
-git clone <this-repo>
+# Install the agent globally
+git clone https://github.com/user/kiro-anywhere.git
 cd kiro-anywhere
-chmod +x install.sh
 ./install.sh
+
+# Convert any project
+cd ~/my-project
+kiro-cli chat --agent kiro-harness
 ```
 
-This installs the `kiro-anywhere` agent to `~/.kiro/agents/` (available globally).
-
-Verify it's installed:
-
-```bash
-kiro-cli agent list
-```
-
-You should see `kiro-anywhere` in the list.
-
-## Usage
-
-### Interactive mode
-
-Navigate to any project with a source harness and start a chat:
-
-```bash
-cd ~/my-project  # has .cursorrules, CLAUDE.md, etc.
-kiro-cli chat --agent kiro-anywhere
-```
-
-Then tell it what to convert:
+Then say:
 
 ```
 Convert the cursor rules in this project to Kiro format
 ```
 
-The agent reads the source config, maps concepts to Kiro equivalents, and writes output to `.kiro/` in your project.
+Done.
 
-### One-shot mode
+### One-shot mode (CI / automation)
 
-For automation or CI:
+```bash
+./convert.sh ~/my-project
+```
+
+Or directly:
 
 ```bash
 cd ~/my-project
-kiro-cli chat --agent kiro-anywhere --trust-all-tools --no-interactive \
+kiro-cli chat --agent kiro-harness --trust-all-tools --no-interactive \
   "Convert all agent configs in this project to Kiro format"
 ```
 
-## What gets generated
+---
 
-Depending on the source config, the agent produces:
+## Supported sources
 
-| Output | Location |
-|--------|----------|
-| Agent config | `.kiro/agents/<name>.json` |
-| Steering files (coding rules, conventions) | `.kiro/steering/<name>.md` |
-| Skills (reusable workflows) | `.kiro/skills/<name>/SKILL.md` |
-| Prompt files (complex system prompts) | `.kiro/prompts/<name>.md` |
+| Tool | Config files | Status |
+|------|-------------|--------|
+| Claude Code | `CLAUDE.md`, `.claude/settings.json` | ✅ Full |
+| Cursor | `.cursorrules`, `.cursor/rules/*.md` | ✅ Full |
+| Windsurf | `.windsurfrules`, `.windsurf/rules/*.md` | ✅ Full |
+| Aider | `.aider.conf.yml`, `.aiderignore` | ✅ Full |
+| Continue | `.continuerc.json`, `config.json` | ✅ Full |
+| Cline | `.clinerules`, `.cline/rules/*.md` | ✅ Full |
+| GitHub Copilot | `.github/copilot-instructions.md` | ✅ Full |
+| Custom | Any structured agent definition | ✅ Partial |
+
+---
+
+## Example conversion
+
+**Input** — `.cursorrules`:
+```
+You are a senior TypeScript developer.
+Always use strict mode. Prefer functional patterns.
+Run prettier on save. Never edit dist/ or node_modules/.
+```
+
+**Output** — `.kiro/agents/my-project.json`:
+```json
+{
+  "name": "my-project",
+  "description": "Senior TypeScript developer with strict mode and functional patterns",
+  "prompt": "file://../../.kiro/prompts/my-project.md",
+  "tools": ["read", "write", "shell", "grep", "glob", "code"],
+  "allowedTools": ["read", "grep", "glob", "code"],
+  "toolsSettings": {
+    "write": {
+      "deniedPaths": ["dist/**", "node_modules/**"]
+    }
+  },
+  "hooks": {
+    "postToolUse": [
+      {"matcher": "write", "command": "npx prettier --write ."}
+    ]
+  }
+}
+```
+
+Plus `.kiro/steering/conventions.md` with the coding rules extracted.
+
+---
 
 ## Concept mapping
+
+This isn't just a file converter — it understands what your config *means*:
 
 | Source concept | Kiro equivalent |
 |----------------|-----------------|
@@ -114,50 +143,114 @@ Depending on the source config, the agent produces:
 | Test/lint runners | `stop` hook |
 | Reusable workflows | `.kiro/skills/` |
 
-For the full mapping reference, see [MAPPINGS.md](kiro-anywhere/MAPPINGS.md).
+Full mapping reference: [MAPPINGS.md](kiro-harness/MAPPINGS.md)
 
-## Limitations
+---
 
-Some source features have no direct Kiro equivalent:
+## Architecture
 
-- Inline code completions config
-- Tab autocomplete model selection
-- Per-file model routing
-- Conditional rule loading (glob-scoped rules)
-- Embeddings/RAG configuration (global only in Kiro)
+```
+┌─────────────────────────────────┐
+│  Source Configs                  │
+│  (Cursor, Claude, Windsurf...)  │
+└───────────────┬─────────────────┘
+                │
+                ▼
+┌─────────────────────────────────┐
+│  kiro-anywhere agent            │
+│  ┌───────────┐  ┌───────────┐  │
+│  │  Parser   │→ │ Normalizer│  │
+│  └───────────┘  └─────┬─────┘  │
+│                        │        │
+│                        ▼        │
+│               ┌───────────┐     │
+│               │ Generator │     │
+│               └─────┬─────┘     │
+└─────────────────────┼───────────┘
+                      │
+                      ▼
+┌─────────────────────────────────┐
+│  .kiro/                          │
+│  ├── agents/<name>.json          │
+│  ├── steering/<name>.md          │
+│  ├── skills/<name>/SKILL.md      │
+│  └── prompts/<name>.md           │
+└─────────────────────────────────┘
+```
 
-The agent will note these and suggest workarounds where possible.
+---
+
+## Known limitations
+
+Some source features don't have a direct Kiro equivalent:
+
+| Feature | Status |
+|---------|--------|
+| Inline code completions config | Not applicable |
+| Tab autocomplete model selection | Not configurable per-agent |
+| Per-file model routing | Single model per agent |
+| Conditional rule loading (glob-scoped) | Steering is always-on; use skills for on-demand |
+| Embeddings/RAG config | Global only in Kiro |
+
+The agent notes these during conversion and suggests workarounds.
+
+---
 
 ## How it works
 
-The agent uses three reference files:
+The agent is powered by three reference files:
 
-- **[prompt.md](kiro-anywhere/prompt.md)** — System prompt with conversion workflow and validation checklist
-- **[REFERENCE.md](kiro-anywhere/REFERENCE.md)** — Kiro CLI agent configuration quick reference
-- **[MAPPINGS.md](kiro-anywhere/MAPPINGS.md)** — Source-to-Kiro concept mapping tables
+- **[prompt.md](kiro-harness/prompt.md)** — Conversion workflow + validation checklist
+- **[REFERENCE.md](kiro-harness/REFERENCE.md)** — Kiro CLI agent config schema
+- **[MAPPINGS.md](kiro-harness/MAPPINGS.md)** — Source → Kiro concept mappings
 
-The agent is configured to:
-- Read any file in the project (to parse source configs)
-- Write only to `.kiro/**` (to generate output)
-- Not run arbitrary shell commands (read-only commands only)
-- Not overwrite its own config
+Safety constraints:
+- Reads any file in the project (to parse source configs)
+- Writes only to `.kiro/**`
+- Shell commands restricted to read-only (`cat`, `ls`, `find`, `head`, `tail`, `jq`)
+- Cannot overwrite its own config
+
+---
+
+## Prerequisites
+
+- [Kiro CLI](https://kiro.dev) installed and authenticated (`kiro-cli login`)
+
+---
+
+## Installation
+
+```bash
+git clone https://github.com/user/kiro-anywhere.git
+cd kiro-anywhere
+./install.sh
+```
+
+Verify:
+
+```bash
+kiro-cli agent list
+# Should show: kiro-harness
+```
 
 ## Uninstalling
 
-Remove the agent files:
-
 ```bash
-rm ~/.kiro/agents/kiro-anywhere.json
-rm -rf ~/.kiro/agents/kiro-anywhere/
+rm ~/.kiro/agents/kiro-harness.json
+rm -rf ~/.kiro/agents/kiro-harness/
 ```
+
+---
 
 ## Contributing
 
-To update the reference material or add support for new source formats:
-
-1. Edit files in `kiro-anywhere/`
+1. Edit files in `kiro-harness/`
 2. Run `./install.sh` to reinstall
 3. Test with a sample source config
+
+PRs welcome — especially for new source format support.
+
+---
 
 ## License
 
