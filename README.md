@@ -1,33 +1,30 @@
 # kiro-anywhere
 
-> **Migrate your existing AI coding assistants to Kiro in seconds.**
+> **The universal migration tool for Kiro CLI.**
 
-Convert Claude Code, Cursor, Windsurf, Continue, Copilot, Cline, and Aider configurations into production-ready Kiro CLI agents — with skills, hooks, steering, and MCP servers preserved.
-
----
-
-## The problem
-
-You've spent hours crafting the perfect AI coding assistant setup — custom rules, allowed commands, context files, MCP integrations. Now you want to try Kiro.
-
-Starting from scratch? No thanks.
-
-**kiro-anywhere** reads your existing config and generates a complete Kiro agent in seconds.
+Migrate your existing AI coding assistants to Kiro in seconds. Convert Claude Code, Cursor, Windsurf, Continue, Copilot, Cline, and Aider configurations into production-ready Kiro CLI agents — with skills, hooks, steering, and MCP servers preserved.
 
 ---
 
-## The transformation
+## Convert
 
 ```
-.cursorrules                          .kiro/
-.cursor/rules/        ──────────►     ├── agents/my-project.json
-CLAUDE.md                             ├── steering/conventions.md
-.aider.conf.yml       kiro-anywhere   ├── skills/deploy/SKILL.md
-.github/copilot-                      └── prompts/system.md
-  instructions.md
+✅ Cursor           ✅ Claude Code       ✅ Windsurf
+✅ Continue         ✅ Cline             ✅ GitHub Copilot
+✅ Aider            🔲 Roo Code          🔲 Codex CLI
+🔲 Gemini CLI       🔲 Amazon Q          🔲 Augment Code
 ```
 
-Your rules become **steering files**. Your workflows become **skills**. Your pre-commit checks become **hooks**. Nothing is lost.
+## Generate
+
+```
+.kiro/
+├── agents/<name>.json          ← agent config
+├── steering/<name>.md          ← coding conventions (always-on)
+├── skills/<name>/SKILL.md      ← reusable workflows (on-demand)
+├── prompts/<name>.md           ← system prompts
+└── hooks                       ← lifecycle commands
+```
 
 ---
 
@@ -45,7 +42,7 @@ Your rules become **steering files**. Your workflows become **skills**. Your pre
 ## Quick start
 
 ```bash
-# Install the agent globally
+# Install
 git clone https://github.com/user/kiro-anywhere.git
 cd kiro-anywhere
 ./install.sh
@@ -61,8 +58,6 @@ Then say:
 Convert the cursor rules in this project to Kiro format
 ```
 
-Done.
-
 ### One-shot mode (CI / automation)
 
 ```bash
@@ -72,25 +67,9 @@ Done.
 Or directly:
 
 ```bash
-cd ~/my-project
 kiro-cli chat --agent kiro-harness --trust-all-tools --no-interactive \
   "Convert all agent configs in this project to Kiro format"
 ```
-
----
-
-## Supported sources
-
-| Tool | Config files | Status |
-|------|-------------|--------|
-| Claude Code | `CLAUDE.md`, `.claude/settings.json` | ✅ Full |
-| Cursor | `.cursorrules`, `.cursor/rules/*.md` | ✅ Full |
-| Windsurf | `.windsurfrules`, `.windsurf/rules/*.md` | ✅ Full |
-| Aider | `.aider.conf.yml`, `.aiderignore` | ✅ Full |
-| Continue | `.continuerc.json`, `config.json` | ✅ Full |
-| Cline | `.clinerules`, `.cline/rules/*.md` | ✅ Full |
-| GitHub Copilot | `.github/copilot-instructions.md` | ✅ Full |
-| Custom | Any structured agent definition | ✅ Partial |
 
 ---
 
@@ -125,6 +104,25 @@ Run prettier on save. Never edit dist/ or node_modules/.
 ```
 
 Plus `.kiro/steering/conventions.md` with the coding rules extracted.
+
+---
+
+## Compatibility benchmark
+
+| Source Tool | Agents | Steering | Skills | Hooks | MCP | Status |
+|-------------|:------:|:--------:|:------:|:-----:|:---:|--------|
+| Cursor | ✅ | ✅ | ✅ | ✅ | ✅ | Full |
+| Claude Code | ✅ | ✅ | ✅ | ✅ | ✅ | Full |
+| Windsurf | ✅ | ✅ | ✅ | ✅ | ✅ | Full |
+| Aider | ✅ | ✅ | — | ✅ | — | Full |
+| Continue | ✅ | ✅ | ✅ | ✅ | — | Full |
+| Cline | ✅ | ✅ | Partial | — | ✅ | Full |
+| GitHub Copilot | ✅ | ✅ | — | — | — | Full |
+| Roo Code | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | Planned |
+| Codex CLI | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | Planned |
+| Gemini CLI | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | Planned |
+| Amazon Q | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | Planned |
+| Augment Code | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | Planned |
 
 ---
 
@@ -180,19 +178,35 @@ Full mapping reference: [MAPPINGS.md](kiro-harness/MAPPINGS.md)
 
 ---
 
-## Known limitations
+## Roadmap
 
-Some source features don't have a direct Kiro equivalent:
+### Done
+- ✅ Cursor support (full)
+- ✅ Claude Code support (full)
+- ✅ Windsurf support (full)
+- ✅ Continue support (full)
+- ✅ Cline support (full)
+- ✅ GitHub Copilot support (full)
+- ✅ Aider support (full)
+- ✅ One-shot CLI mode
+- ✅ Safety constraints (write-only to `.kiro/`, read-only shell)
 
-| Feature | Status |
-|---------|--------|
-| Inline code completions config | Not applicable |
-| Tab autocomplete model selection | Not configurable per-agent |
-| Per-file model routing | Single model per agent |
-| Conditional rule loading (glob-scoped) | Steering is always-on; use skills for on-demand |
-| Embeddings/RAG config | Global only in Kiro |
+### Next
+- 🔲 Roo Code support
+- 🔲 Codex CLI support
+- 🔲 Gemini CLI support
+- 🔲 Amazon Q Developer support
+- 🔲 Augment Code support
+- 🔲 Auto-detect source configs on agent spawn
+- 🔲 Terminal recording / animated demo
+- 🔲 Validation report (diff what was mapped vs. what couldn't be)
 
-The agent notes these during conversion and suggests workarounds.
+### Future
+- 🔲 Interactive TUI mode
+- 🔲 Web converter
+- 🔲 Bidirectional sync (Kiro ↔ other formats)
+- 🔲 Plugin SDK for custom source formats
+- 🔲 npm / brew package for zero-clone install
 
 ---
 
@@ -212,13 +226,27 @@ Safety constraints:
 
 ---
 
-## Prerequisites
+## Known limitations
 
-- [Kiro CLI](https://kiro.dev) installed and authenticated (`kiro-cli login`)
+| Feature | Status |
+|---------|--------|
+| Inline code completions config | Not applicable |
+| Tab autocomplete model selection | Not configurable per-agent |
+| Per-file model routing | Single model per agent |
+| Conditional rule loading (glob-scoped) | Steering is always-on; use skills for on-demand |
+| Embeddings/RAG config | Global only in Kiro |
+
+The agent notes these during conversion and suggests workarounds.
 
 ---
 
 ## Installation
+
+### Prerequisites
+
+- [Kiro CLI](https://kiro.dev) installed and authenticated (`kiro-cli login`)
+
+### Install
 
 ```bash
 git clone https://github.com/user/kiro-anywhere.git
@@ -233,7 +261,7 @@ kiro-cli agent list
 # Should show: kiro-harness
 ```
 
-## Uninstalling
+### Uninstall
 
 ```bash
 rm ~/.kiro/agents/kiro-harness.json
@@ -249,6 +277,10 @@ rm -rf ~/.kiro/agents/kiro-harness/
 3. Test with a sample source config
 
 PRs welcome — especially for new source format support.
+
+---
+
+## ⭐ Star this project if it saved you time.
 
 ---
 
