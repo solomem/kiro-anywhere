@@ -43,7 +43,7 @@ Migrate your existing AI coding assistants to Kiro in seconds. Convert Claude Co
 
 ```bash
 # Install
-git clone https://github.com/user/kiro-anywhere.git
+git clone https://github.com/solomem/kiro-anywhere.git
 cd kiro-anywhere
 ./install.sh
 
@@ -249,7 +249,7 @@ The agent notes these during conversion and suggests workarounds.
 ### Install
 
 ```bash
-git clone https://github.com/user/kiro-anywhere.git
+git clone https://github.com/solomem/kiro-anywhere.git
 cd kiro-anywhere
 ./install.sh
 ```
