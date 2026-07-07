@@ -11,7 +11,8 @@ Migrate your existing AI coding assistants to Kiro in seconds. Convert Claude Co
 ```
 ✅ Cursor           ✅ Claude Code       ✅ Windsurf
 ✅ Continue         ✅ Cline             ✅ GitHub Copilot
-✅ Aider            🔲 Roo Code          🔲 Codex CLI
+✅ Aider            ✅ Codex CLI Plugin  ✅ Claude Plugin
+✅ Cursor Plugin    ✅ Agent Toolkit     🔲 Roo Code
 🔲 Gemini CLI       🔲 Amazon Q          🔲 Augment Code
 ```
 
@@ -118,8 +119,11 @@ Plus `.kiro/steering/conventions.md` with the coding rules extracted.
 | Continue | ✅ | ✅ | ✅ | ✅ | — | Full |
 | Cline | ✅ | ✅ | Partial | — | ✅ | Full |
 | GitHub Copilot | ✅ | ✅ | — | — | — | Full |
+| Codex CLI Plugin | ✅ | — | ✅ | ✅ | ✅ | Full |
+| Claude Plugin | ✅ | — | ✅ | ✅ | ✅ | Full |
+| Cursor Plugin | ✅ | — | ✅ | — | ✅ | Full |
+| Agent Toolkit | ✅ | ✅ | ✅ | ✅ | ✅ | Full |
 | Roo Code | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | Planned |
-| Codex CLI | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | Planned |
 | Gemini CLI | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | Planned |
 | Amazon Q | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | Planned |
 | Augment Code | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | Planned |
@@ -188,12 +192,15 @@ Full mapping reference: [MAPPINGS.md](kiro-harness/MAPPINGS.md)
 - ✅ Cline support (full)
 - ✅ GitHub Copilot support (full)
 - ✅ Aider support (full)
+- ✅ Codex CLI Plugin support (full)
+- ✅ Claude Plugin support (full)
+- ✅ Cursor Plugin support (full)
+- ✅ Agent Toolkit support (full — skills, hooks, MCP, commands)
 - ✅ One-shot CLI mode
 - ✅ Safety constraints (write-only to `.kiro/`, read-only shell)
 
 ### Next
 - 🔲 Roo Code support
-- 🔲 Codex CLI support
 - 🔲 Gemini CLI support
 - 🔲 Amazon Q Developer support
 - 🔲 Augment Code support

@@ -143,6 +143,106 @@ description: Deploy to production. Use when asked to deploy or ship.
 3. Deploy
 ```
 
+## Codex CLI Plugin → Kiro
+
+| Codex CLI | Kiro Equivalent |
+|---|---|
+| `.codex-plugin/plugin.json` → `name` | Agent filename (`<name>.json`) |
+| `.codex-plugin/plugin.json` → `description` | `description` field |
+| `.codex-plugin/plugin.json` → `interface.shortDescription` | `description` field (preferred over top-level) |
+| `.codex-plugin/plugin.json` → `interface.displayName` | Agent `name` field |
+| `.codex-plugin/plugin.json` → `interface.longDescription` | `.kiro/prompts/<name>.md` (referenced via `prompt` field) |
+| `.codex-plugin/plugin.json` → `interface.defaultPrompt[]` | `welcomeMessage` (first entry) or skill descriptions |
+| `.codex-plugin/plugin.json` → `interface.capabilities` | `tools` array (`"Read"` → `["read", "grep", "glob"]`, `"Write"` → adds `"write", "shell"`) |
+| `.codex-plugin/plugin.json` → `skills` path | `.kiro/skills/` (copy skill markdown files) |
+| `.codex-plugin/plugin.json` → `mcpServers` path | Load referenced `.mcp.json` → inline in `mcpServers` field |
+| `.codex-plugin/plugin.json` → `keywords` | Not mapped (no Kiro equivalent) |
+| `.codex-plugin/plugin.json` → `interface.brandColor` | Not mapped |
+
+## Claude Plugin → Kiro
+
+| Claude Plugin | Kiro Equivalent |
+|---|---|
+| `.claude-plugin/plugin.json` → `name` | Agent filename (`<name>.json`) |
+| `.claude-plugin/plugin.json` → `description` | `description` field |
+| `.claude-plugin/plugin.json` → `keywords` | Not mapped |
+| `.claude-plugin/plugin.json` → `version` | Not mapped (Kiro agents are unversioned) |
+| `hooks/hooks.json` → `PreToolUse` | `hooks.preToolUse` (translate format — see below) |
+| `hooks/hooks.json` → `PostToolUse` | `hooks.postToolUse` |
+| `skills/` directory | `.kiro/skills/` (copy SKILL.md files as-is) |
+| `.mcp.json` → `mcpServers` | `mcpServers` field (inline, resolve env vars) |
+
+### Claude Plugin Hooks Translation
+
+Claude format:
+```json
+{"hooks": {"PreToolUse": [{"matcher": "Bash|use_aws", "hooks": [{"type": "command", "command": "script.py", "timeout": 5}]}]}}
+```
+
+Kiro equivalent:
+```json
+{"hooks": {"preToolUse": [{"matcher": "shell", "command": "python3 script.py", "timeout_ms": 5000}, {"matcher": "use_aws", "command": "python3 script.py", "timeout_ms": 5000}]}}
+```
+
+Key differences:
+- `PreToolUse` (Pascal) → `preToolUse` (camel)
+- `matcher` is regex in Claude → glob/exact in Kiro (split `|` alternatives into separate entries)
+- `Bash` matcher → `shell`
+- Nested `hooks[]` array → flat (one hook object per entry)
+- `timeout` in seconds → `timeout_ms` in milliseconds
+- `$CLAUDE_PLUGIN_ROOT` env var → use path relative to agent file
+
+## Cursor Plugin → Kiro
+
+| Cursor Plugin | Kiro Equivalent |
+|---|---|
+| `.cursor-plugin/plugin.json` → `name` | Agent filename |
+| `.cursor-plugin/plugin.json` → `displayName` | Agent `name` field |
+| `.cursor-plugin/plugin.json` → `description` | `description` field |
+| `.cursor-plugin/plugin.json` → `category` | Not mapped |
+| `.cursor-plugin/plugin.json` → `skills` path | `.kiro/skills/` |
+| `.cursor-plugin/plugin.json` → `mcpServers` path | Load referenced file → inline in `mcpServers` field |
+
+## Plugin Commands → Kiro Skills
+
+Plugin `commands/` directories contain markdown files with frontmatter:
+
+```markdown
+---
+description: Start a deep root-cause investigation
+argument-hint: [incident description]
+---
+Workflow instructions here...
+```
+
+Kiro equivalent — `.kiro/skills/<name>/SKILL.md`:
+
+```markdown
+---
+name: investigate
+description: Start a deep root-cause investigation. Use when asked to investigate an incident.
+---
+Workflow instructions here...
+```
+
+Key differences:
+- Add `name` field (derived from filename)
+- `argument-hint` → incorporate into `description` text
+- File location: `commands/<name>.md` → `.kiro/skills/<name>/SKILL.md`
+
+## Standalone .mcp.json → Kiro
+
+`.mcp.json` files map directly to the `mcpServers` field in agent config:
+
+```json
+{"mcpServers": {"aws-mcp": {"command": "uvx", "args": ["mcp-proxy@1.6.3", "https://..."]}}}
+```
+
+For HTTP-based MCP servers, drop the `"type"` field (Kiro infers from `url` presence):
+```json
+{"mcpServers": {"aws-devops-agent": {"url": "https://...", "headers": {"Authorization": "Bearer $TOKEN"}, "timeout": 120000}}}
+```
+
 ## Concepts Without Direct Kiro Equivalent
 
 | Source Concept | Workaround |

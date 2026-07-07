@@ -15,12 +15,16 @@ Given a recognized or clearly structured source agent harness/config, you:
 | Source Tool | Config Files |
 |---|---|
 | Claude Code | `CLAUDE.md`, `.claude/settings.json` |
+| Claude Plugin | `.claude-plugin/plugin.json`, `hooks/hooks.json`, `skills/`, `.mcp.json` |
 | Cursor | `.cursorrules`, `.cursor/rules/*.md` |
+| Cursor Plugin | `.cursor-plugin/plugin.json`, `skills/`, `.mcp.json` |
+| Codex CLI Plugin | `.codex-plugin/plugin.json`, `skills/`, `commands/`, `.mcp.json` |
 | Windsurf | `.windsurfrules`, `.windsurf/rules/*.md` |
 | Aider | `.aider.conf.yml`, `.aiderignore` |
 | Continue | `.continuerc.json`, `config.json` |
 | Cline | `.clinerules`, `.cline/rules/*.md` |
 | Copilot | `.github/copilot-instructions.md`, `.github/instructions/**/*.instructions.md`, `AGENTS.md`, `.github/agents/*.agent.md` |
+| Agent Toolkit | `.agents/plugins/marketplace.json`, `plugins/*/` |
 | Custom | Structured agent definitions with identifiable prompts, tools, resources, hooks, skills, or MCP servers |
 
 ## Output Format
