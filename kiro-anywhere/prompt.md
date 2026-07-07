@@ -117,9 +117,40 @@ Always write generated agent files to `.kiro/agents/<name>.json` relative to the
 ## Conversion Rules
 
 ### Prompts / System Instructions
-- Source rules/instructions → `prompt` field (inline or `file://` reference)
-- If rules are complex (>500 chars), create a separate prompt file and reference it
-- Coding conventions → `.kiro/steering/*.md` files (always loaded by default agent)
+
+**The `prompt` field defines the agent's IDENTITY and ROLE** — not project rules or conventions. It answers: "What are you? What's your expertise? How should you behave?"
+
+**Steering files define PROJECT RULES** — conventions, coding standards, glossaries. They go in `.kiro/steering/*.md` and are loaded via `resources`.
+
+| Content type | Where it goes | Example |
+|---|---|---|
+| "You are a Rust expert focused on safety" | `prompt` field (inline or file) | Agent identity |
+| "Always use strict mode, prefer functional" | `.kiro/steering/conventions.md` | Project rules |
+| "Domain glossary: Issue tracker means..." | `.kiro/steering/glossary.md` or `resources: ["file://CONTEXT.md"]` | Reference context |
+| "Run prettier on save" | `hooks.postToolUse` | Automation |
+
+**NEVER use a steering file as the prompt.** If the source has rules/conventions (CLAUDE.md, .cursorrules), split them:
+- Agent role/personality → `prompt` field or `.kiro/agents/prompts/<name>.md`
+- Project conventions → `.kiro/steering/*.md`
+
+If the source only has rules and no agent personality, create a brief prompt describing what the agent does:
+```json
+"prompt": "You are a development assistant for this project. Follow the conventions in the loaded steering files."
+```
+
+### Rewriting Stale Source References in Steering
+
+When converting source rules (CLAUDE.md, .cursorrules, etc.) into steering files, **actively rewrite** tool-specific references to their Kiro equivalents:
+
+| Source reference | Rewrite to |
+|---|---|
+| "entry in `.claude-plugin/plugin.json`" | "entry in the agent's `skill://` resources list" |
+| "run `scripts/link-skills.sh`" | "skills are placed directly in `.kiro/skills/`" (no linking needed) |
+| "`~/.claude/skills`" or "`~/.agents/skills`" | "`.kiro/skills/`" |
+| "listed in `.cursorrules`" | "defined in agent config or steering" |
+| "add to `.continuerc.json`" | "add to agent config" |
+
+Do NOT leave stale references that point users at source-tool mechanisms that no longer apply in Kiro.
 
 ### Tool Permissions
 - "allowed commands" / "allowed tools" → `allowedTools` array
@@ -296,6 +327,8 @@ Before writing output, verify ALL of the following:
 - [ ] All `toolsSettings` keys use canonical tool names (`write` not `fs_write`, `shell` not `execute_bash`)
 - [ ] All `resources` entries start with `file://` or `skill://`
 - [ ] `skill://` references use bare names (`skill://aws-cdk`) NOT relative paths (`skill://../skills/aws-cdk/SKILL.md`)
+- [ ] `prompt` field defines agent identity/role — NOT project rules (don't use a steering file as the prompt)
+- [ ] Steering files don't contain stale source-tool references (`.claude-plugin/`, `scripts/link-skills.sh`, `~/.claude/skills`)
 - [ ] `resources` `file://` paths are workspace-relative (NOT `../../` traversal — that's only for `prompt`)
 - [ ] Do NOT add `includeMcpJson` or `useLegacyMcpJson` unless converting from `.amazonq/mcp.json` legacy format
 - [ ] Glob patterns use `**` for recursive matching
@@ -317,6 +350,7 @@ These are real errors that have been made before. **NEVER do any of these:**
 
 | ❌ WRONG | ✅ CORRECT | Why |
 |---|---|---|
+| `"prompt": "file://../../.kiro/steering/conventions.md"` | `"prompt": "You are a dev assistant for this project."` + steering in resources | Prompt = identity. Steering = rules. Don't mix them. |
 | `"tools": ["read", "write", "shell", "web"]` | `"tools": ["read", "write", "shell", "grep", "glob", "code", "web_search", "web_fetch"]` | There is NO "web" category. Each tool is individual. |
 | `"allowedTools": ["read", "web"]` | `"allowedTools": ["read", "grep", "glob", "code", "web_search", "web_fetch"]` | Same — list each tool individually. |
 | `"includeMcpJson": true` | (omit entirely) | This field does not exist. `.kiro/settings/mcp.json` auto-loads for workspace agents. |
