@@ -300,6 +300,19 @@ Before writing output, verify ALL of the following:
 - [ ] No undocumented fields in any object
 - [ ] Do NOT search the web for Kiro format information — rely only on REFERENCE.md and MAPPINGS.md
 
+## WRONG — Common Mistakes That Break Agents
+
+These are real errors that have been made before. **NEVER do any of these:**
+
+| ❌ WRONG | ✅ CORRECT | Why |
+|---|---|---|
+| `"tools": ["read", "write", "shell", "web"]` | `"tools": ["read", "write", "shell", "grep", "glob", "code", "web_search", "web_fetch"]` | There is NO "web" category. Each tool is individual. |
+| `"allowedTools": ["read", "web"]` | `"allowedTools": ["read", "grep", "glob", "code", "web_search", "web_fetch"]` | Same — list each tool individually. |
+| `"skill://../skills/aws-cdk/SKILL.md"` | `"skill://aws-cdk"` | skill:// uses bare name matching frontmatter `name:` field. NOT file paths. |
+| `"includeMcpJson": true` | (omit entirely) | This field does not exist. `.kiro/settings/mcp.json` auto-loads. |
+| `"useLegacyMcpJson": true` | (omit unless migrating from `.amazonq/mcp.json`) | Only needed for legacy Amazon Q paths. |
+| `"type": "http"` in mcpServers | Just use `"url": "https://..."` | Kiro infers HTTP from `url` presence. `type` is optional. |
+
 ## Canonical Tool Names Reference
 
 | Canonical | Aliases (also work but don't use in output) |
