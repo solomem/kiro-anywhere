@@ -10,8 +10,8 @@
       "deniedPaths": [".kiro/agents/kiro-anywhere.json"]
     },
     "shell": {
-      "denyByDefault": true,
-      "allowedCommands": ["cat", "ls", "find", "head", "tail", "jq"]
+      "allowedCommands": ["^cat\\b", "^ls\\b", "^find\\b", "^head\\b", "^tail\\b", "^jq\\b", "^wc\\b", "^grep\\b", "^tree\\b"],
+      "autoAllowReadonly": true
     }
   },
   "resources": [
