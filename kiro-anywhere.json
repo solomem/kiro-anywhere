@@ -2,8 +2,8 @@
   "name": "kiro-anywhere",
   "description": "Convert common AI coding-agent configs (Claude Code, Cursor, Windsurf, Aider, Continue, Cline, Copilot, etc.) into Kiro CLI-compatible agent configurations. Reads recognized or structured source configs, maps tools/permissions/context, and outputs valid .kiro/agents/*.json files.",
   "prompt": "file://kiro-anywhere/prompt.md",
-  "tools": ["read", "write", "shell", "grep", "glob", "code"],
-  "allowedTools": ["read", "grep", "glob", "code"],
+  "tools": ["read", "write", "shell", "grep", "glob", "code", "task"],
+  "allowedTools": ["read", "grep", "glob", "code", "task"],
   "toolsSettings": {
     "write": {
       "allowedPaths": [".kiro/**"],

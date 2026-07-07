@@ -214,32 +214,59 @@ When source prompts/instructions reference internal directory paths (e.g., `plug
 
 ## Conversion Workflow
 
-1. **Detect** — Scan the project for known harness files to identify which source format(s) are present:
-   - Look for these in order (a project may have multiple):
-     ```
-     .claude-plugin/plugin.json     → Claude Plugin
-     .cursor-plugin/plugin.json     → Cursor Plugin
-     .codex-plugin/plugin.json      → Codex CLI Plugin
-     .agents/plugins/marketplace.json → Agent Toolkit
-     CLAUDE.md, .claude/            → Claude Code
-     .cursorrules, .cursor/rules/   → Cursor
-     .windsurfrules, .windsurf/     → Windsurf
-     .clinerules, .cline/           → Cline
-     .continuerc.json, config.json  → Continue
-     .aider.conf.yml                → Aider
-     .github/copilot-instructions.md → GitHub Copilot
-     .github/agents/*.agent.md      → Copilot Agents
-     AGENTS.md                      → Copilot/Generic
-     ```
-   - Report what you found: "Detected: Cursor (.cursorrules) + Claude Code (CLAUDE.md)"
-   - If nothing is detected and the user hasn't pasted a config, ask what to convert
+Use the task tool to create a todo list for every conversion. This enforces step-by-step execution and prevents skipping validation.
 
-2. **Read** the source config(s) completely
-3. **Identify** each concept: rules, tools, context, integrations, hooks, skills, MCP servers
-4. **Map** to Kiro primitives using MAPPINGS.md reference
-5. **Generate** the agent JSON + any supporting files (steering, skills, prompts, hooks)
-6. **Validate** the output against the checklist below
-7. **Explain** what was mapped and any items that have no direct equivalent
+**Create this task list at the start of every conversion:**
+
+1. ☐ Detect — scan for harness files and report what was found
+2. ☐ Read — read all detected source configs completely
+3. ☐ Identify — list every concept found (tools, permissions, context, hooks, skills, MCP, rules)
+4. ☐ Map — determine the Kiro equivalent for each concept using REFERENCE.md and MAPPINGS.md
+5. ☐ Generate — write agent JSON + supporting files
+6. ☐ Validate — run through the full validation checklist (do NOT skip this)
+7. ☐ Explain — report what was mapped and what couldn't be
+
+**Mark each task complete as you finish it.** Do not start generating files until steps 1–4 are done.
+
+### Step 1: Detect
+
+Scan the project for known harness files to identify which source format(s) are present:
+- Look for these in order (a project may have multiple):
+  ```
+  .claude-plugin/plugin.json     → Claude Plugin
+  .cursor-plugin/plugin.json     → Cursor Plugin
+  .codex-plugin/plugin.json      → Codex CLI Plugin
+  .agents/plugins/marketplace.json → Agent Toolkit
+  CLAUDE.md, .claude/            → Claude Code
+  .cursorrules, .cursor/rules/   → Cursor
+  .windsurfrules, .windsurf/     → Windsurf
+  .clinerules, .cline/           → Cline
+  .continuerc.json, config.json  → Continue
+  .aider.conf.yml                → Aider
+  .github/copilot-instructions.md → GitHub Copilot
+  .github/agents/*.agent.md      → Copilot Agents
+  AGENTS.md                      → Copilot/Generic
+  ```
+- Report what you found: "Detected: Cursor (.cursorrules) + Claude Code (CLAUDE.md)"
+- If nothing is detected and the user hasn't pasted a config, ask what to convert
+
+### Steps 2–4: Read, Identify, Map
+
+- Read source configs completely before generating anything
+- List what you found (concepts table)
+- Map each concept to Kiro using REFERENCE.md and MAPPINGS.md ONLY (never web search)
+
+### Step 5: Generate
+
+Write all output files.
+
+### Step 6: Validate
+
+Run through EVERY item in the validation checklist below. Fix any failures before reporting done.
+
+### Step 7: Explain
+
+Report what was mapped, what wasn't, and any workarounds suggested.
 
 ## When Concepts Don't Map
 
