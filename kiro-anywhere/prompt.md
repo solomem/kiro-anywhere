@@ -72,36 +72,47 @@ Always write generated agent files to `.kiro/agents/<name>.json` relative to the
 
 ## Path Resolution Rules (CRITICAL)
 
-`file://` paths in agent configs resolve **relative to the agent JSON file's directory**. Since you always place agents at `.kiro/agents/<name>.json`, the base directory is `.kiro/agents/`.
+**`prompt` field** — resolves relative to the **agent JSON file's directory**:
+- Agent at `.kiro/agents/my.json` with `"prompt": "file://prompts/system.md"` → `.kiro/agents/prompts/system.md`
+- Use `../../` to reach workspace root from `.kiro/agents/`
 
-To reference files elsewhere in the workspace from a workspace agent:
-- `.kiro/steering/rules.md` → use `file://../../.kiro/steering/rules.md` (NOT `file://.kiro/steering/rules.md`)
-- `.kiro/prompts/system.md` → use `file://../../.kiro/prompts/system.md`
-- `src/**/*.ts` → use `file://../../src/**/*.ts`
-- `README.md` → use `file://../../README.md`
+**`resources` field** — resolves relative to the **workspace root** (cwd):
+- `"file://.kiro/steering/rules.md"` → `<workspace>/.kiro/steering/rules.md`
+- `"file://README.md"` → `<workspace>/README.md`
+- `"skill://.kiro/skills/aws-cdk/SKILL.md"` → `<workspace>/.kiro/skills/aws-cdk/SKILL.md`
+- `"skill://aws-cdk"` → name-based lookup (matches `name:` in frontmatter anywhere in `.kiro/skills/`)
 
-**The pattern**: always `../../` to get from `.kiro/agents/` back to the workspace root, then the path from there.
-
-For `prompt` field file references, use the same rule:
-- `"prompt": "file://../../.kiro/prompts/<name>.md"`
-
-For hook `command` fields, these execute with `cwd` set to the **workspace root**, so use paths relative to workspace root directly:
-- `"command": "python3 .kiro/hooks/secret-safety.py"` ✅ (cwd is workspace root)
-
-For `skill://` references, use the skill's `name` field from its SKILL.md frontmatter:
-- `"skill://aws-cdk"` → matches `.kiro/skills/aws-cdk/SKILL.md` where frontmatter has `name: aws-cdk`
-- `"skill://.kiro/skills/**/SKILL.md"` → glob-based (loads all skills by path)
+**`hooks.command`** — runs with cwd = workspace root:
+- `"python3 .kiro/hooks/script.py"` → `<workspace>/.kiro/hooks/script.py`
 
 ### Quick Reference
 
-| What you're referencing | In `resources` or `prompt` field | In hook `command` |
+| Field | Resolves from | Example |
 |---|---|---|
-| Steering file | `file://../../.kiro/steering/name.md` | n/a |
-| Prompt file | `file://../../.kiro/prompts/name.md` | n/a |
-| Skill by name | `skill://skill-name` | n/a |
-| Skill by glob | `skill://.kiro/skills/**/SKILL.md` | n/a |
-| Source file | `file://../../src/**/*.ts` | n/a |
-| Hook script | n/a | `python3 .kiro/hooks/script.py` |
+| `prompt` | Agent JSON file directory (`.kiro/agents/`) | `file://prompts/system.md` → `.kiro/agents/prompts/system.md` |
+| `resources` (file://) | Workspace root | `file://.kiro/steering/rules.md` → `.kiro/steering/rules.md` |
+| `resources` (skill://) | Workspace root OR name-based | `skill://.kiro/skills/*/SKILL.md` or `skill://aws-cdk` |
+| `hooks.command` | Workspace root (cwd) | `python3 .kiro/hooks/script.py` |
+
+### Resources path examples
+
+| What you're referencing | Correct `resources` entry |
+|---|---|
+| Steering file | `file://.kiro/steering/rules.md` |
+| All steering files | `file://.kiro/steering/**/*.md` |
+| Skill by name | `skill://skill-name` |
+| Skill by path | `skill://.kiro/skills/aws-cdk/SKILL.md` |
+| All skills (glob) | `skill://.kiro/skills/**/SKILL.md` |
+| Source file | `file://src/**/*.ts` |
+| README | `file://README.md` |
+
+### Prompt path examples
+
+| What you're referencing | Correct `prompt` value |
+|---|---|
+| Prompt file next to agent | `file://prompts/my-agent.md` (resolves to `.kiro/agents/prompts/my-agent.md`) |
+| Prompt at workspace root | `file://../../.kiro/prompts/my-agent.md` |
+| Absolute path | `file:///home/user/.kiro/prompts/my-agent.md` |
 
 ## Conversion Rules
 
@@ -285,7 +296,7 @@ Before writing output, verify ALL of the following:
 - [ ] All `toolsSettings` keys use canonical tool names (`write` not `fs_write`, `shell` not `execute_bash`)
 - [ ] All `resources` entries start with `file://` or `skill://`
 - [ ] `skill://` references use bare names (`skill://aws-cdk`) NOT relative paths (`skill://../skills/aws-cdk/SKILL.md`)
-- [ ] All `file://` paths in `resources` and `prompt` correctly use `../../` to traverse from `.kiro/agents/` to workspace root when needed
+- [ ] `resources` `file://` paths are workspace-relative (NOT `../../` traversal — that's only for `prompt`)
 - [ ] Do NOT add `includeMcpJson` or `useLegacyMcpJson` unless converting from `.amazonq/mcp.json` legacy format
 - [ ] Glob patterns use `**` for recursive matching
 - [ ] Copilot path-specific instruction `applyTo` globs are preserved in generated steering text or reported as conditional-loading limitations
@@ -308,10 +319,11 @@ These are real errors that have been made before. **NEVER do any of these:**
 |---|---|---|
 | `"tools": ["read", "write", "shell", "web"]` | `"tools": ["read", "write", "shell", "grep", "glob", "code", "web_search", "web_fetch"]` | There is NO "web" category. Each tool is individual. |
 | `"allowedTools": ["read", "web"]` | `"allowedTools": ["read", "grep", "glob", "code", "web_search", "web_fetch"]` | Same — list each tool individually. |
-| `"skill://../skills/aws-cdk/SKILL.md"` | `"skill://aws-cdk"` | skill:// uses bare name matching frontmatter `name:` field. NOT file paths. |
-| `"includeMcpJson": true` | (omit entirely) | This field does not exist. `.kiro/settings/mcp.json` auto-loads. |
+| `"includeMcpJson": true` | (omit entirely) | This field does not exist. `.kiro/settings/mcp.json` auto-loads for workspace agents. |
 | `"useLegacyMcpJson": true` | (omit unless migrating from `.amazonq/mcp.json`) | Only needed for legacy Amazon Q paths. |
-| `"type": "http"` in mcpServers | Just use `"url": "https://..."` | Kiro infers HTTP from `url` presence. `type` is optional. |
+| In `resources`: `"file://../../.kiro/steering/rules.md"` | `"file://.kiro/steering/rules.md"` | Resources resolve from workspace root, NOT agent file dir. Don't use `../../`. |
+| In `prompt`: `"file://.kiro/prompts/system.md"` | `"file://prompts/system.md"` or `"file://../../.kiro/prompts/system.md"` | Prompt resolves from agent file dir. Either put the file next to the agent, or traverse up. |
+| `"skill://../skills/aws-cdk/SKILL.md"` | `"skill://aws-cdk"` or `"skill://.kiro/skills/aws-cdk/SKILL.md"` | skill:// uses either bare name or workspace-relative path. Never relative traversal. |
 
 ## Canonical Tool Names Reference
 

@@ -76,38 +76,39 @@
 
 ## Path Resolution
 
-- `file://` in `prompt` and `resources` resolves **relative to the agent JSON file's directory**
+**Two different resolution rules:**
+
+- `prompt` field `file://` resolves **relative to the agent JSON file's directory**
   - For workspace agents (`.kiro/agents/myagent.json`), the base is `.kiro/agents/`
   - For global agents (`~/.kiro/agents/myagent.json`), the base is `~/.kiro/agents/`
-- `file:///` (triple slash) is an **absolute path** — resolves from filesystem root
-- The default built-in agent resolves relative paths from the **workspace root** (cwd)
+- `resources` field `file://` and `skill://` resolve **relative to the workspace root** (cwd)
+- `file:///` (triple slash) is always an **absolute path**
 
-### Examples
+### Prompt Path Examples
 
-| Agent location | Resource value | Resolves to |
+| Agent location | `prompt` value | Resolves to |
 |---|---|---|
-| `.kiro/agents/my.json` | `file://helpers/ref.md` | `.kiro/agents/helpers/ref.md` |
-| `.kiro/agents/my.json` | `file://../../.kiro/steering/rules.md` | `.kiro/steering/rules.md` |
+| `.kiro/agents/my.json` | `file://prompts/system.md` | `.kiro/agents/prompts/system.md` |
 | `.kiro/agents/my.json` | `file://../../.kiro/prompts/system.md` | `.kiro/prompts/system.md` |
-| `.kiro/agents/my.json` | `file://../../src/**/*.ts` | `src/**/*.ts` |
-| `.kiro/agents/my.json` | `file:///home/user/ref.md` | `/home/user/ref.md` |
-| (default agent) | `file://src/**/*.rs` | `<cwd>/src/**/*.rs` |
-| (default agent) | `file://.kiro/steering/**/*.md` | `<cwd>/.kiro/steering/**/*.md` |
+| `.kiro/agents/my.json` | `file:///home/user/prompt.md` | `/home/user/prompt.md` |
 
-> **CRITICAL:** For workspace agents at `.kiro/agents/<name>.json`, always use `../../` to reach workspace root. `file://.kiro/steering/foo.md` would incorrectly resolve to `.kiro/agents/.kiro/steering/foo.md`.
+### Resources Path Examples
 
-### Skill References
-
-| Reference style | Resolves to |
+| `resources` entry | Resolves to (from workspace root) |
 |---|---|
-| `skill://aws-cdk` | Matches skill with `name: aws-cdk` in frontmatter (any `.kiro/skills/**/SKILL.md`) |
-| `skill://.kiro/skills/**/SKILL.md` | Glob — loads all skills by path |
+| `file://README.md` | `<cwd>/README.md` |
+| `file://.kiro/steering/rules.md` | `<cwd>/.kiro/steering/rules.md` |
+| `file://.kiro/steering/**/*.md` | All .md files under `<cwd>/.kiro/steering/` |
+| `skill://.kiro/skills/aws-cdk/SKILL.md` | `<cwd>/.kiro/skills/aws-cdk/SKILL.md` |
+| `skill://.kiro/skills/**/SKILL.md` | All skills (glob) |
+| `skill://aws-cdk` | Name-based lookup (matches `name: aws-cdk` in frontmatter) |
 
-### Hook Commands
+### Hook Command Paths
 
-Hook `command` fields execute with `cwd` = workspace root. Use workspace-relative paths directly:
-- ✅ `"command": "python3 .kiro/hooks/script.py"`
-- ❌ `"command": "python3 ../../.kiro/hooks/script.py"` (wrong — hooks don't resolve from agent dir)
+Hook `command` fields execute with cwd = workspace root:
+- `"command": "python3 .kiro/hooks/script.py"` → `<cwd>/.kiro/hooks/script.py`
+
+> **KEY DISTINCTION:** `prompt` uses agent-file-relative paths. `resources` uses workspace-relative paths. Do NOT mix them up.
 
 ## Built-in Tools (Canonical Names)
 
