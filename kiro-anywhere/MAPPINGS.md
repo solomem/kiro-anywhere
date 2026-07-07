@@ -192,6 +192,28 @@ Key differences:
 - `timeout` in seconds → `timeout_ms` in milliseconds
 - `$CLAUDE_PLUGIN_ROOT` env var → use path relative to agent file
 
+### Claude Plugin Hook Script Translation
+
+Hook scripts MUST be rewritten for Kiro's protocol:
+
+| Claude convention | Kiro convention |
+|---|---|
+| Output JSON `{"permissionDecision": "deny"}` + exit 0 | Print to STDERR + exit 2 |
+| Check `tool_name == "Bash"` | Check `tool_name == "shell"` |
+| Check `tool_name.startswith("mcp__")` | Check `tool_name == "@server/tool"` or `tool_name == "use_aws"` |
+| `timeout: 5` (seconds) | `timeout_ms: 5000` (milliseconds) |
+
+If the source script is non-trivial, copy it to `.kiro/hooks/` and rewrite the exit logic:
+```python
+# WRONG (Claude style):
+json.dump({"hookSpecificOutput": {"permissionDecision": "deny", ...}}, sys.stdout)
+sys.exit(0)
+
+# CORRECT (Kiro style):
+print("Reason for blocking", file=sys.stderr)
+sys.exit(2)
+```
+
 ## Cursor Plugin → Kiro
 
 | Cursor Plugin | Kiro Equivalent |
@@ -202,6 +224,53 @@ Key differences:
 | `.cursor-plugin/plugin.json` → `category` | Not mapped |
 | `.cursor-plugin/plugin.json` → `skills` path | `.kiro/skills/` |
 | `.cursor-plugin/plugin.json` → `mcpServers` path | Load referenced file → inline in `mcpServers` field |
+
+## Agent Toolkit → Kiro
+
+The Agent Toolkit pattern (`.agents/plugins/marketplace.json`) is a **multi-plugin registry**. Each plugin becomes a separate Kiro agent.
+
+| Agent Toolkit | Kiro Equivalent |
+|---|---|
+| `.agents/plugins/marketplace.json` → `plugins[].name` | One `.kiro/agents/<name>.json` per plugin |
+| `.agents/plugins/marketplace.json` → `plugins[].source.path` | Base path for that plugin's skills, hooks, MCP |
+| `plugins/<name>/skills/` | Copy all to `.kiro/skills/` (flatten — no per-plugin subdirs) |
+| `plugins/<name>/hooks/hooks.json` | Translate to Kiro hooks in each agent's config |
+| `plugins/<name>/hooks/*.py` | Copy to `.kiro/hooks/`, rewrite for Kiro protocol |
+| `plugins/<name>/.mcp.json` | Inline into each agent's `mcpServers` |
+| `plugins/<name>/commands/` | Convert to `.kiro/skills/` (same as Plugin Commands) |
+| `rules/*.md` | → `.kiro/steering/*.md` |
+
+### Conversion strategy for multi-plugin repos:
+
+1. **One agent per plugin** — each plugin in the marketplace becomes its own `.kiro/agents/<name>.json`
+2. **Shared steering** — global rules (`rules/`) become a single `.kiro/steering/` file referenced by all agents
+3. **Skills are flat** — all skills from all plugins go into `.kiro/skills/<name>/SKILL.md` (no nesting). Skills are matched by `name:` frontmatter, not directory path.
+4. **Hooks shared** — if multiple plugins use the same hook script, copy it once to `.kiro/hooks/` and reference from each agent
+5. **MCP per agent** — each agent inlines only the MCP servers it needs (don't give every agent every MCP server)
+6. **Prompt per agent** — generate `.kiro/agents/prompts/<name>.md` for each agent with its specific instructions
+
+### Example:
+
+Source `marketplace.json` with 3 plugins → generates:
+```
+.kiro/
+├── agents/
+│   ├── aws-core.json
+│   ├── aws-agents.json
+│   ├── aws-data-analytics.json
+│   └── prompts/
+│       ├── aws-core.md
+│       ├── aws-agents.md
+│       └── aws-data-analytics.md
+├── steering/
+│   └── aws-agent-rules.md          ← shared by all agents
+├── skills/
+│   ├── aws-cdk/SKILL.md            ← from plugins/aws-core/skills/
+│   ├── agents-build/SKILL.md       ← from plugins/aws-agents/skills/
+│   └── ...                          ← flattened from all plugins
+└── hooks/
+    └── secret-safety.py             ← shared hook, rewritten for Kiro
+```
 
 ## Plugin Commands → Kiro Skills
 
@@ -242,6 +311,23 @@ For HTTP-based MCP servers, drop the `"type"` field (Kiro infers from `url` pres
 ```json
 {"mcpServers": {"aws-devops-agent": {"url": "https://...", "headers": {"Authorization": "Bearer $TOKEN"}, "timeout": 120000}}}
 ```
+
+**IMPORTANT: MCP server placement rule.** If a steering file or prompt mentions an MCP server (e.g., "use the AWS MCP Server"), that server MUST be configured in the agent's `mcpServers` field. Do NOT assume it will come from global settings or `useLegacyMcpJson`. Each agent should be self-contained.
+
+## Prompt Content Rewriting
+
+When converting prompt/instruction files, rewrite internal path references to match the `.kiro/` layout:
+
+| Source path | Rewrite to |
+|---|---|
+| `plugins/<name>/skills/` | `.kiro/skills/` |
+| `plugins/<name>/hooks/` | `.kiro/hooks/` |
+| `rules/` | `.kiro/steering/` |
+| `commands/` | `.kiro/skills/` |
+| `skills/core-skills/` | `.kiro/skills/` |
+| `skills/specialized-skills/` | `.kiro/skills/` |
+
+Skills in Kiro are flat under `.kiro/skills/<name>/SKILL.md` — there are no subdirectory groupings like `core-skills/` or `specialized-skills/`. All skills are found by name via `skill://` URI regardless of where they sit.
 
 ## Concepts Without Direct Kiro Equivalent
 

@@ -87,11 +87,27 @@
 | Agent location | Resource value | Resolves to |
 |---|---|---|
 | `.kiro/agents/my.json` | `file://helpers/ref.md` | `.kiro/agents/helpers/ref.md` |
+| `.kiro/agents/my.json` | `file://../../.kiro/steering/rules.md` | `.kiro/steering/rules.md` |
+| `.kiro/agents/my.json` | `file://../../.kiro/prompts/system.md` | `.kiro/prompts/system.md` |
+| `.kiro/agents/my.json` | `file://../../src/**/*.ts` | `src/**/*.ts` |
 | `.kiro/agents/my.json` | `file:///home/user/ref.md` | `/home/user/ref.md` |
 | (default agent) | `file://src/**/*.rs` | `<cwd>/src/**/*.rs` |
 | (default agent) | `file://.kiro/steering/**/*.md` | `<cwd>/.kiro/steering/**/*.md` |
 
-> **Tip:** For custom agents that need workspace-relative paths, use `../../src/**/*.rs` to navigate up from `.kiro/agents/` to the workspace root.
+> **CRITICAL:** For workspace agents at `.kiro/agents/<name>.json`, always use `../../` to reach workspace root. `file://.kiro/steering/foo.md` would incorrectly resolve to `.kiro/agents/.kiro/steering/foo.md`.
+
+### Skill References
+
+| Reference style | Resolves to |
+|---|---|
+| `skill://aws-cdk` | Matches skill with `name: aws-cdk` in frontmatter (any `.kiro/skills/**/SKILL.md`) |
+| `skill://.kiro/skills/**/SKILL.md` | Glob — loads all skills by path |
+
+### Hook Commands
+
+Hook `command` fields execute with `cwd` = workspace root. Use workspace-relative paths directly:
+- ✅ `"command": "python3 .kiro/hooks/script.py"`
+- ❌ `"command": "python3 ../../.kiro/hooks/script.py"` (wrong — hooks don't resolve from agent dir)
 
 ## Built-in Tools (Canonical Names)
 

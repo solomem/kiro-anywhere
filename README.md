@@ -50,7 +50,7 @@ cd kiro-anywhere
 
 # Convert any project
 cd ~/my-project
-kiro-cli chat --agent kiro-harness
+kiro-cli chat --agent kiro-anywhere
 ```
 
 Then say:
@@ -68,7 +68,7 @@ Convert the cursor rules in this project to Kiro format
 Or directly:
 
 ```bash
-kiro-cli chat --agent kiro-harness --trust-all-tools --no-interactive \
+kiro-cli chat --agent kiro-anywhere --trust-all-tools --no-interactive \
   "Convert all agent configs in this project to Kiro format"
 ```
 
@@ -145,7 +145,7 @@ This isn't just a file converter — it understands what your config *means*:
 | Test/lint runners | `stop` hook |
 | Reusable workflows | `.kiro/skills/` |
 
-Full mapping reference: [MAPPINGS.md](kiro-harness/MAPPINGS.md)
+Full mapping reference: [MAPPINGS.md](kiro-anywhere/MAPPINGS.md)
 
 ---
 
@@ -221,14 +221,15 @@ Full mapping reference: [MAPPINGS.md](kiro-harness/MAPPINGS.md)
 
 The agent is powered by three reference files:
 
-- **[prompt.md](kiro-harness/prompt.md)** — Conversion workflow + validation checklist
-- **[REFERENCE.md](kiro-harness/REFERENCE.md)** — Kiro CLI agent config schema
-- **[MAPPINGS.md](kiro-harness/MAPPINGS.md)** — Source → Kiro concept mappings
+- **[prompt.md](kiro-anywhere/prompt.md)** — Conversion workflow + validation checklist
+- **[REFERENCE.md](kiro-anywhere/REFERENCE.md)** — Kiro CLI agent config schema
+- **[MAPPINGS.md](kiro-anywhere/MAPPINGS.md)** — Source → Kiro concept mappings
 
 Safety constraints:
 - Reads any file in the project (to parse source configs)
 - Writes only to `.kiro/**`
-- Shell commands restricted to read-only (`cat`, `ls`, `find`, `head`, `tail`, `jq`)
+- Read-only shell commands auto-approved (`find`, `ls`, `cat`, `head`, `tail`, etc.)
+- Write-capable shell commands require user approval
 - Cannot overwrite its own config
 
 ---
@@ -265,21 +266,21 @@ Verify:
 
 ```bash
 kiro-cli agent list
-# Should show: kiro-harness
+# Should show: kiro-anywhere
 ```
 
 ### Uninstall
 
 ```bash
-rm ~/.kiro/agents/kiro-harness.json
-rm -rf ~/.kiro/agents/kiro-harness/
+rm ~/.kiro/agents/kiro-anywhere.json
+rm -rf ~/.kiro/agents/kiro-anywhere/
 ```
 
 ---
 
 ## Contributing
 
-1. Edit files in `kiro-harness/`
+1. Edit files in `kiro-anywhere/`
 2. Run `./install.sh` to reinstall
 3. Test with a sample source config
 

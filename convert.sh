@@ -18,4 +18,4 @@ echo "Converting agent configs in: $(pwd)"
 echo "---"
 
 kiro-cli chat --agent kiro-anywhere --trust-all-tools --no-interactive \
-  "Convert all agent configs in this project to Kiro format. Look for any of: CLAUDE.md, GEMINI.md, AGENTS.md, .claude/, .cursorrules, .cursor/, .windsurfrules, .windsurf/, .aider.conf.yml, .aiderignore, .continuerc.json, .clinerules, .cline/, .github/copilot-instructions.md, .github/instructions/**/*.instructions.md, .github/agents/*.agent.md. Convert everything you find."
+  "Convert all agent configs in this project to Kiro format. Scan for all supported harnesses: .claude-plugin/, .cursor-plugin/, .codex-plugin/, .agents/plugins/, CLAUDE.md, .claude/, .cursorrules, .cursor/, .windsurfrules, .windsurf/, .clinerules, .cline/, .continuerc.json, .aider.conf.yml, .aiderignore, .github/copilot-instructions.md, .github/agents/*.agent.md, AGENTS.md, GEMINI.md. Detect what's present, report it, then convert everything you find."
