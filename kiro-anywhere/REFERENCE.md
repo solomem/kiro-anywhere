@@ -111,6 +111,8 @@ Hook `command` fields execute with `cwd` = workspace root. Use workspace-relativ
 
 ## Built-in Tools (Canonical Names)
 
+Each tool below is an **individual tool name** — use them as-is in `tools` and `allowedTools` arrays. There are NO category groupings (no `"web"` category — use `"web_search"` and `"web_fetch"` individually).
+
 | Tool (canonical) | Aliases | Description |
 |---|---|---|
 | `read` | `fs_read`, `fsRead` | Read files, directories, search patterns |
@@ -172,7 +174,22 @@ description: When to activate this skill
 Instructions here...
 ```
 
-Invoke via `/skill-name` or automatic matching.
+### Referencing Skills in Agent Resources
+
+Two forms are valid:
+
+| Format | Example | Behavior |
+|---|---|---|
+| Name-based | `skill://aws-cdk` | Matches skill where frontmatter `name: aws-cdk` |
+| Path-based (glob) | `skill://.kiro/skills/**/SKILL.md` | Loads all skills matching glob |
+
+**Name-based is preferred** for explicit skill lists. Kiro scans `.kiro/skills/` for SKILL.md files, reads their frontmatter, and matches by `name:` field.
+
+**Do NOT use relative path traversal** with `skill://` (e.g., `skill://../skills/aws-cdk/SKILL.md` is not guaranteed to work). Use bare names: `skill://aws-cdk`.
+
+### MCP Settings Auto-Loading
+
+Workspace agents automatically get MCP servers from `.kiro/settings/mcp.json` — no `useLegacyMcpJson` or `includeMcpJson` field is needed. Only use `useLegacyMcpJson: true` if you need to load servers from the legacy `.amazonq/mcp.json` path.
 
 ## Permissions Model
 
