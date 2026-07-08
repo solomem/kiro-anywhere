@@ -162,7 +162,7 @@ Do NOT leave stale references that point users at source-tool mechanisms that no
   "tools": ["read", "write", "shell", "grep", "glob", "code", "web_search", "web_fetch"],
   "allowedTools": ["read", "grep", "glob", "code"]
   ```
-  Auto-approve reads only. Never put `write` or `shell` in `allowedTools` unless the source explicitly pre-approved them.
+  Auto-approve reads only. Never put `write` or `shell` in `allowedTools` unless the source had an explicit allowlist that included write/shell commands (e.g., `.claude/settings.json` with `allowedTools: ["Bash"]`, or `allowedCommands` in Continue config). The absence of restrictions (like `strict: false`) is NOT explicit pre-approval — it just means the source didn't restrict, but Kiro should still prompt for writes and shell.
 
 ### Context / File Inclusion
 - "always include these files" → `resources` with `file://` URIs
@@ -359,6 +359,7 @@ These are real errors that have been made before. **NEVER do any of these:**
 | ❌ WRONG | ✅ CORRECT | Why |
 |---|---|---|
 | `"prompt": "file://../../.kiro/steering/conventions.md"` | `"prompt": "You are a dev assistant for this project."` + steering in resources | Prompt = identity. Steering = rules. Don't mix them. |
+| `"allowedTools": ["read", "write", "shell", "grep", "glob", "code", "web_search", "web_fetch"]` | `"allowedTools": ["read", "grep", "glob", "code"]` | Never auto-approve write/shell. `strict: false` or no restrictions ≠ "trust all". |
 | `"tools": ["read", "write", "shell", "web"]` | `"tools": ["read", "write", "shell", "grep", "glob", "code", "web_search", "web_fetch"]` | There is NO "web" category. Each tool is individual. |
 | `"allowedTools": ["read", "web"]` | `"allowedTools": ["read", "grep", "glob", "code", "web_search", "web_fetch"]` | Same — list each tool individually. |
 | `"includeMcpJson": true` | (omit entirely) | This field does not exist. `.kiro/settings/mcp.json` auto-loads for workspace agents. |
