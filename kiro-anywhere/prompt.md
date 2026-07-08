@@ -156,6 +156,7 @@ Do NOT leave stale references that point users at source-tool mechanisms that no
 - "allowed commands" / "allowed tools" → `allowedTools` array
 - Tool restrictions → `toolsSettings` with `allowedPaths`/`deniedPaths`/`allowedCommands`
 - Read-only mode → `tools: ["read", "grep", "glob", "code"]`
+- **Default when source has no explicit permissions:** `allowedTools: ["read", "grep", "glob", "code"]` — auto-approve reads only. Never put `write` or `shell` in `allowedTools` unless the source explicitly pre-approved them. Users should confirm before file writes and shell commands.
 
 ### Context / File Inclusion
 - "always include these files" → `resources` with `file://` URIs
