@@ -156,7 +156,13 @@ Do NOT leave stale references that point users at source-tool mechanisms that no
 - "allowed commands" / "allowed tools" → `allowedTools` array
 - Tool restrictions → `toolsSettings` with `allowedPaths`/`deniedPaths`/`allowedCommands`
 - Read-only mode → `tools: ["read", "grep", "glob", "code"]`
-- **Default when source has no explicit permissions:** `allowedTools: ["read", "grep", "glob", "code"]` — auto-approve reads only. Never put `write` or `shell` in `allowedTools` unless the source explicitly pre-approved them. Users should confirm before file writes and shell commands.
+- **Always include both `tools` and `allowedTools` explicitly** — never omit them. Omitting is ambiguous.
+- **Default when source has no explicit permissions:**
+  ```json
+  "tools": ["read", "write", "shell", "grep", "glob", "code", "web_search", "web_fetch"],
+  "allowedTools": ["read", "grep", "glob", "code"]
+  ```
+  Auto-approve reads only. Never put `write` or `shell` in `allowedTools` unless the source explicitly pre-approved them.
 
 ### Context / File Inclusion
 - "always include these files" → `resources` with `file://` URIs
@@ -253,7 +259,8 @@ When source prompts/instructions reference internal directory paths (e.g., `plug
 ### Skills
 - Reusable workflows → `.kiro/skills/<name>/SKILL.md`
 - Domain-specific instructions → skill with frontmatter
-- Copy skills with their `references/` subdirectories intact (skills are self-contained)
+- Copy skills with their `references/`, `scripts/`, `examples/` subdirectories intact (skills are self-contained)
+- **Always COPY skill files into `.kiro/skills/`** — never use symlinks. Symlinks break on Windows, don't work in archives/packages, and create fragile cross-directory dependencies. Even if the source skills already exist elsewhere in the repo, copy them.
 
 ## Conversion Workflow
 
