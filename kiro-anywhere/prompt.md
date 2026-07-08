@@ -181,6 +181,10 @@ Do NOT leave stale references that point users at source-tool mechanisms that no
 - API connections → MCP server with appropriate env vars
 - If the source has a standalone `.mcp.json`, inline its contents into the agent's `mcpServers` field
 - Ensure every MCP server referenced in steering/prompts is actually configured in the agent config — don't assume it comes from elsewhere
+- **Strip these from source when converting:**
+  - `"type": "http"` — omit it. Kiro infers HTTP from `url` presence.
+  - `${VAR:-default}` bash syntax — replace with `${VAR}` only. Kiro doesn't support shell defaults in env expansion.
+  - `"type": "stdio"` — omit it. Kiro infers stdio from `command` presence.
 
 ### Hooks
 - Pre-commit checks → `preToolUse` hook with matcher `write`
@@ -308,7 +312,7 @@ Scan the project for known harness files to identify which source format(s) are 
 
 ### Step 5: Generate
 
-Write all output files.
+Write all output files. **Before writing each agent JSON**, mentally check against the WRONG/CORRECT table below — don't carry over source patterns that Kiro doesn't support (like `"type": "http"`, `${VAR:-default}`, tool categories, `includeMcpJson`).
 
 ### Step 6: Validate
 
