@@ -367,6 +367,7 @@ These are real errors that have been made before. **NEVER do any of these:**
 | In `resources`: `"file://../../.kiro/steering/rules.md"` | `"file://.kiro/steering/rules.md"` | Resources resolve from workspace root, NOT agent file dir. Don't use `../../`. |
 | In `prompt`: `"file://.kiro/prompts/system.md"` | `"file://prompts/system.md"` or `"file://../../.kiro/prompts/system.md"` | Prompt resolves from agent file dir. Either put the file next to the agent, or traverse up. |
 | `"skill://../skills/aws-cdk/SKILL.md"` | `"skill://aws-cdk"` or `"skill://.kiro/skills/aws-cdk/SKILL.md"` | skill:// uses either bare name or workspace-relative path. Never relative traversal. |
+| `"url": "https://api.${REGION:-us-east-1}.example.com"` | `"url": "https://api.${REGION}.example.com"` | Kiro does not support bash `${VAR:-default}` syntax. Use `${VAR}` only — document the required env var for users. |
 
 ## Canonical Tool Names Reference
 
