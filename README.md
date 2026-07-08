@@ -12,8 +12,7 @@ Migrate your existing AI coding assistants to Kiro in seconds. Convert Claude Co
 ✅ Cursor           ✅ Claude Code       ✅ Windsurf
 ✅ Continue         ✅ Cline             ✅ GitHub Copilot
 ✅ Aider            ✅ Codex CLI Plugin  ✅ Claude Plugin
-✅ Cursor Plugin    ✅ Agent Toolkit     🔲 Roo Code
-🔲 Gemini CLI       🔲 Augment Code
+✅ Cursor Plugin    ✅ Agent Toolkit     🔲 Gemini CLI
 ```
 
 ## Generate
@@ -123,9 +122,7 @@ Plus `.kiro/steering/conventions.md` with the coding rules extracted.
 | Claude Plugin | ✅ | — | ✅ | ✅ | ✅ | Full |
 | Cursor Plugin | ✅ | — | ✅ | — | ✅ | Full |
 | Agent Toolkit | ✅ | ✅ | ✅ | ✅ | ✅ | Full |
-| Roo Code | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | Planned |
 | Gemini CLI | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | Planned |
-| Augment Code | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 | Planned |
 
 ---
 
@@ -199,9 +196,7 @@ Full mapping reference: [MAPPINGS.md](kiro-anywhere/MAPPINGS.md)
 - ✅ Safety constraints (write-only to `.kiro/`, read-only shell)
 
 ### Next
-- 🔲 Roo Code support
 - 🔲 Gemini CLI support
-- 🔲 Augment Code support
 - 🔲 Auto-detect source configs on agent spawn
 - 🔲 Terminal recording / animated demo
 - 🔲 Validation report (diff what was mapped vs. what couldn't be)
