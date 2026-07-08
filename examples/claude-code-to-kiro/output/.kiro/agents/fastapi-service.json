@@ -1,0 +1,20 @@
+{
+  "name": "fastapi-service",
+  "description": "Python backend developer for a FastAPI service with strict typing and pydantic validation.",
+  "prompt": "You are a Python backend developer working on a FastAPI service. Use type hints everywhere. Prefer pydantic models for validation.",
+  "tools": ["read", "write", "shell", "grep", "glob", "code"],
+  "allowedTools": ["read", "grep", "glob", "code"],
+  "toolsSettings": {
+    "write": {
+      "deniedPaths": [".env", "**/*.secret", "**/secrets/**"]
+    },
+    "shell": {
+      "autoAllowReadonly": true
+    }
+  },
+  "hooks": {
+    "stop": [
+      {"command": "pytest --tb=short -q"}
+    ]
+  }
+}

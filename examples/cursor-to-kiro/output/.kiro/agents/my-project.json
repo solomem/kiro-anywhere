@@ -1,0 +1,17 @@
+{
+  "name": "my-project",
+  "description": "Senior TypeScript developer with strict mode and functional patterns",
+  "prompt": "You are a senior TypeScript developer. Always use strict mode. Prefer functional patterns. Use vitest for testing. Prefer named exports.",
+  "tools": ["read", "write", "shell", "grep", "glob", "code"],
+  "allowedTools": ["read", "grep", "glob", "code"],
+  "toolsSettings": {
+    "write": {
+      "deniedPaths": ["dist/**", "node_modules/**"]
+    }
+  },
+  "hooks": {
+    "postToolUse": [
+      {"matcher": "write", "command": "npx prettier --write ."}
+    ]
+  }
+}

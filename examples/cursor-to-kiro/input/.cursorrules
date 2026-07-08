@@ -1,0 +1,4 @@
+You are a senior TypeScript developer.
+Always use strict mode. Prefer functional patterns.
+Run prettier on save. Never edit dist/ or node_modules/.
+Use vitest for testing. Prefer named exports.
